@@ -31,16 +31,17 @@ public class UsuarioService {
         );
     }
 
-    public Usuario findByEmail(String email){
-        return usuarioRepository.findByEmail(email).get();
+    public Usuario findById(Long id){
+        return usuarioRepository.findById(id).get();
     }
 
-    public Usuario updateUsuario(String email, Usuario novoUsuario){
-        Usuario usuario = usuarioRepository.findByEmail(email).get();
+    public Usuario updateUsuario(Long id, Usuario novoUsuario){
+        Usuario usuario = usuarioRepository.findById(id).get();
         usuario.setNome(novoUsuario.getNome());
         usuario.setIdade(novoUsuario.getIdade());
         usuario.setSenha(novoUsuario.getSenha());
 
         return usuarioRepository.save(usuario);
     }
+
 }

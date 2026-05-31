@@ -6,6 +6,8 @@ import com.ecommerce.amazon.dto.usuario.UsuarioResponseDTO;
 import com.ecommerce.amazon.entity.Usuario;
 import com.ecommerce.amazon.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,19 +18,22 @@ public class UsuarioController {
     UsuarioService usuarioService;
 
     @PostMapping("/criarUsuario")
-    public UsuarioResponseDTO addUsuario(@RequestBody UsuarioRequestDTO usuario){
+    public UsuarioResponseDTO addUsuario(@RequestBody UsuarioRequestDTO usuario) {
         return usuarioService.novoUsuario(usuario);
     }
 
-    @GetMapping("/usuario/{email}")
-    public Usuario getUser(@PathVariable String email){
-        return  usuarioService.findByEmail(email);
+    @GetMapping("/usuario/{id}")
+    public Usuario getUser(@PathVariable Long id) {
+        return usuarioService.findById(id);
     }
 
-    @PutMapping("/atualizarUsuario/{email}")
-    public Usuario updateUsuario(@RequestBody Usuario usuario, @PathVariable String email){
-            return usuarioService.updateUsuario(email, usuario);
-        }
+    @PutMapping("/atualizarUsuario/{id}")
+    public Usuario updateUsuario(@RequestBody Usuario usuario, @PathVariable Long id) {
+        return usuarioService.updateUsuario(id, usuario);
+    }
+
+
+
 
 }
 
