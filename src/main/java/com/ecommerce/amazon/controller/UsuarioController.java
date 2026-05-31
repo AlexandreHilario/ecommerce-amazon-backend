@@ -24,8 +24,11 @@ public class UsuarioController {
     public Usuario getUser(@PathVariable String email){
         return  usuarioService.findByEmail(email);
     }
-    
 
-
+    @PutMapping("/atualizarUsuario/{email}")
+    public Usuario updateUsuario(@RequestBody Usuario usuario, @PathVariable String email){
+            return usuarioService.updateUsuario(email, usuario);
+        }
 
 }
+
