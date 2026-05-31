@@ -18,10 +18,6 @@ public class UsuarioController {
     @Autowired
     UsuarioService usuarioService;
 
-    @PostMapping("/criarUsuario")
-    public UsuarioResponseDTO addUsuario(@RequestBody UsuarioRequestDTO usuario) {
-        return usuarioService.novoUsuario(usuario);
-    }
 
     @GetMapping("/usuario/{id}")
     public Usuario getUser(@PathVariable Long id) {

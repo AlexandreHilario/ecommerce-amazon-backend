@@ -12,25 +12,6 @@ public class UsuarioService {
     @Autowired
     UsuarioRepository usuarioRepository;
 
-    public UsuarioResponseDTO novoUsuario(UsuarioRequestDTO usuario){
-        Usuario novoUsuario = new Usuario();
-
-        novoUsuario.setNome(usuario.getNomeUsuario());
-        novoUsuario.setIdade(usuario.getIdadeUsuario());
-        novoUsuario.setEmail(usuario.getEmailUsuario());
-        novoUsuario.setSenha(usuario.getSenhaUsuario());
-
-        Usuario salvarUsuario = usuarioRepository.save(novoUsuario);
-
-        return  new UsuarioResponseDTO(
-                salvarUsuario.getId(),
-                salvarUsuario.getNome(),
-                salvarUsuario.getEmail(),
-                salvarUsuario.getIdade()
-
-        );
-    }
-
     public Usuario findById(Long id){
         return usuarioRepository.findById(id).get();
     }
