@@ -3,31 +3,36 @@ package com.ecommerce.amazon.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
-@Table(
-    name = "carrinho_produtos",
-    uniqueConstraints = @UniqueConstraint(name = "uk_carrinho_produto", columnNames = {"carrinho_id", "produto_id"})
-)
+@Table(name = "carrinhos")
+
+
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CarrinhoProduto {
+public class Carrinho {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "carrinho_id", nullable = false, foreignKey = @ForeignKey(name = "fk_cp_carrinho"))
-    private Carrinho carrinho;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true,
+                foreignKey = @ForeignKey(name = "fk_carrinho_usuario"))
+    private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "produto_id", nullable = false, foreignKey = @ForeignKey(name = "fk_cp_produto"))
-    private Produto produto;
+    @Column(name = "criado_em", insertable = false, updatable = false)
+    private LocalDateTime criadoEm;
 
-    @Column(nullable = false, columnDefinition = "int4 DEFAULT 1")
+
+    @OneToMany(mappedBy = "carrinho", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private Integer quantidade = 1;
+    private List<CarrinhoProduto> itens = new ArrayList<>();
 }
