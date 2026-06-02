@@ -1,15 +1,3 @@
-package com.ecommerce.amazon.controller;
-
-import com.ecommerce.amazon.entity.Venda;
-import com.ecommerce.amazon.entity.enums.StatusVenda;
-import com.ecommerce.amazon.service.VendaService;
-
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 @RestController
 @RequestMapping("/vendas")
 @RequiredArgsConstructor
@@ -19,7 +7,6 @@ public class VendaController {
 
     @GetMapping("/{id}")
     public Venda buscarPorId(@PathVariable Long id) {
-
         return vendaService.buscarPorId(id);
     }
 
@@ -36,5 +23,12 @@ public class VendaController {
             @RequestParam StatusVenda status) {
 
         return vendaService.atualizarStatus(id, status);
+    }
+
+    @PostMapping("/finalizar/{usuarioId}")
+    public Venda finalizarCompra(
+            @PathVariable Long usuarioId) {
+
+        return vendaService.finalizarCompra(usuarioId);
     }
 }
