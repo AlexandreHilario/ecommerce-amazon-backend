@@ -2,8 +2,8 @@ package com.ecommerce.amazon.entity.enums;
 
 public enum StatusVenda {
     PENDENTE,
-    PAGO,
-    CANCELADO,
+    CONFIRMADO,
     ENVIADO,
-    ENTREGUE
+    ENTREGUE,
+    CANCELADO
 }
