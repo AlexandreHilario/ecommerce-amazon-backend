@@ -1,32 +1,35 @@
-importar  Jacarta . persistência .*;
-import  lombok .*;
+package com.ecommerce.amazon.entity;
 
-import  java.time.LocalDateTime ;​​​​
-import  java.util.ArrayList ;​​​​
-import  java.util.List ;​​​​
+import jakarta.persistence.*;
+import lombok.*;
 
-@ Entidade
-@ Mesa ( nome = "carrinhos" )
-@ Getter
-@ Setter
-@ NoArgsConstructor
-@ AllArgsConstructor
-@ Construtor
-public  class  Carrinho {
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-    @ Eu ia
-    @GeneratedValue ( strategy = GenerationType.IDENTITY )​​​
-     ID longo  privado ;
+@Entity
+@Table(name = "carrinhos")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Carrinho {
 
-    @OneToOne ( fetch = FetchType.LAZY , optional = false )​​​
-    @JoinColumn ( name = "usuario_id " , nullable = false , unique = true ,
-                ForeignKey = @ ForeignKey ( nome = "fk_carrinho_usuario" ))
-     usuário  privado usuário ;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @ Coluna ( nome = "criado_em" , inserível = falso , atualizável = falso )
-    private  LocalDateTime  criadoEm ;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true,
+                foreignKey = @ForeignKey(name = "fk_carrinho_usuario"))
+    private Usuario usuario;
 
-    @OneToMany ( mappedBy = " carrinho " , cascade = CascadeType.ALL , orphanRemoval = true )​
-    @ Construtor . Padrão
-     lista privada < CarrinhoProduto > itens = new ArrayList <>() ; 
+    @Column(name = "criado_em", insertable = false, updatable = false)
+    private LocalDateTime criadoEm;
+
+
+    @OneToMany(mappedBy = "carrinho", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<CarrinhoProduto> itens = new ArrayList<>();
 }
