@@ -16,6 +16,7 @@ public class ProdutoService {
     private final ProdutoRepository produtoRepository;
 
     public List<ProdutoResponseDTO> listarTodos() {
+
         return produtoRepository.findAll()
                 .stream()
                 .map(this::converterParaDTO)
@@ -23,8 +24,10 @@ public class ProdutoService {
     }
 
     public ProdutoResponseDTO buscarPorId(Long id) {
+
         Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(() ->
+                        new RuntimeException("Produto não encontrado"));
 
         return converterParaDTO(produto);
     }
@@ -44,10 +47,14 @@ public class ProdutoService {
         return converterParaDTO(produto);
     }
 
-    public ProdutoResponseDTO atualizar(Long id, ProdutoRequestDTO dto) {
+    public ProdutoResponseDTO atualizar(
+            Long id,
+            ProdutoRequestDTO dto
+    ) {
 
         Produto produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(() ->
+                        new RuntimeException("Produto não encontrado"));
 
         produto.setNome(dto.getNome());
         produto.setDescricao(dto.getDescricao());
@@ -64,7 +71,26 @@ public class ProdutoService {
         produtoRepository.deleteById(id);
     }
 
-    private ProdutoResponseDTO converterParaDTO(Produto produto) {
+    public List<ProdutoResponseDTO> listarAtivos() {
+
+        return produtoRepository.findByAtivoTrue()
+                .stream()
+                .map(this::converterParaDTO)
+                .toList();
+    }
+
+    public List<ProdutoResponseDTO> buscarPorNome(String nome) {
+
+        return produtoRepository.findByNomeContainingIgnoreCase(nome)
+                .stream()
+                .map(this::converterParaDTO)
+                .toList();
+    }
+
+    private ProdutoResponseDTO converterParaDTO(
+            Produto produto
+    ) {
+
         return ProdutoResponseDTO.builder()
                 .id(produto.getId())
                 .nome(produto.getNome())

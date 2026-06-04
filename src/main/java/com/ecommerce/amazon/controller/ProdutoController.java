@@ -12,7 +12,6 @@ import java.util.List;
 @RequestMapping("/produtos")
 @RequiredArgsConstructor
 @CrossOrigin("*")
-
 public class ProdutoController {
 
     private final ProdutoService produtoService;
@@ -23,12 +22,16 @@ public class ProdutoController {
     }
 
     @GetMapping("/{id}")
-    public ProdutoResponseDTO buscarPorId(@PathVariable Long id) {
+    public ProdutoResponseDTO buscarPorId(
+            @PathVariable Long id
+    ) {
         return produtoService.buscarPorId(id);
     }
 
     @PostMapping
-    public ProdutoResponseDTO criar(@RequestBody ProdutoRequestDTO dto) {
+    public ProdutoResponseDTO criar(
+            @RequestBody ProdutoRequestDTO dto
+    ) {
         return produtoService.criar(dto);
     }
 
@@ -41,8 +44,21 @@ public class ProdutoController {
     }
 
     @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Long id) {
+    public void deletar(
+            @PathVariable Long id
+    ) {
         produtoService.deletar(id);
     }
-    
+
+    @GetMapping("/ativos")
+    public List<ProdutoResponseDTO> listarAtivos() {
+        return produtoService.listarAtivos();
+    }
+
+    @GetMapping("/buscar")
+    public List<ProdutoResponseDTO> buscarPorNome(
+            @RequestParam String nome
+    ) {
+        return produtoService.buscarPorNome(nome);
+    }
 }
