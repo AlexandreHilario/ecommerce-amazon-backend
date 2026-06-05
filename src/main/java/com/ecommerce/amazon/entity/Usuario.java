@@ -26,8 +26,8 @@ public class Usuario {
     @Column(nullable = false, length = 150)
     private String nome;
 
-    @Column(nullable = false, length = 3)
-    private int idade;
+    @Column(length = 3)
+    private Integer idade;
 
     @Column(nullable = false, length = 150)
     private String email;
