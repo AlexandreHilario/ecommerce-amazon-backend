@@ -5,7 +5,6 @@ import lombok.Data;
 @Data  
 public class VendaRequestDTO {
 
-    
     private Long usuarioId;
     private String nomeUsuario;   
     private BigDecimal valorTotal;
