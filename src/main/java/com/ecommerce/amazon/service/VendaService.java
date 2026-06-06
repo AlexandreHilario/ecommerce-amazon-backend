@@ -41,7 +41,7 @@ public class VendaService {
 
         return vendaRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Venda não encontrada"));
+                        throw new BusinessException("Venda não encontrada");
     }
 
     public List<Venda> buscarHistorico(Long usuarioId) {
@@ -65,7 +65,7 @@ public class VendaService {
     ) {
 
         if (produto.getEstoque() < quantidade) {
-            throw new RuntimeException("Estoque insuficiente");
+            throw new BusinessException("Estoque insuficiente para o produto: " + produto.getNome());
         }
 
         produto.setEstoque(
@@ -79,11 +79,11 @@ public class VendaService {
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() ->
-                        new RuntimeException("Usuário não encontrado"));
+                      throw new BusinessException("Usuário não encontrado");
 
         Carrinho carrinho = carrinhoRepository.findByUsuarioId(usuarioId)
                 .orElseThrow(() ->
-                        new RuntimeException("Carrinho não encontrado"));
+                       throw new BusinessException("Carrinho não encontrado");
 
         List<CarrinhoProduto> itensCarrinho =
                 carrinhoProdutoRepository.findByCarrinhoId(
@@ -91,7 +91,7 @@ public class VendaService {
                 );
 
         if (itensCarrinho.isEmpty()) {
-            throw new RuntimeException("Carrinho vazio");
+                throw new BusinessException("Carrinho vazio");
         }
 
         Venda venda = Venda.builder()
