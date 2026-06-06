@@ -1,20 +1,18 @@
 package com.ecommerce.amazon.dto.venda;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Getter
 @Setter
-@ToString 
-@EqualsAndHashCode
 @Builder
-public class VendaProdutoResponseDTO {
-
+public class VendaItemResponseDTO {
     private Long produtoId;
-    private String nomeProduto;   
+    private String nomeProduto;
     private Integer quantidade;
     private BigDecimal precoUnitario;
-    private BigDecimal subtotal; 
+    private BigDecimal subtotal;
 }

@@ -8,6 +8,7 @@ import com.ecommerce.amazon.entity.Venda;
 import com.ecommerce.amazon.entity.VendaProduto;
 import com.ecommerce.amazon.entity.enums.StatusVenda;
 
+import com.ecommerce.amazon.exception.BusinessException;
 import com.ecommerce.amazon.repository.CarrinhoProdutoRepository;
 import com.ecommerce.amazon.repository.CarrinhoRepository;
 import com.ecommerce.amazon.repository.ProdutoRepository;
@@ -40,8 +41,7 @@ public class VendaService {
     public Venda buscarPorId(Long id) {
 
         return vendaRepository.findById(id)
-                .orElseThrow(() ->
-                        throw new BusinessException("Venda não encontrada");
+                .orElseThrow(() -> new BusinessException("Venda não encontrada"));
     }
 
     public List<Venda> buscarHistorico(Long usuarioId) {
@@ -78,12 +78,10 @@ public class VendaService {
     public Venda finalizarCompra(Long usuarioId) {
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() ->
-                      throw new BusinessException("Usuário não encontrado");
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
 
         Carrinho carrinho = carrinhoRepository.findByUsuarioId(usuarioId)
-                .orElseThrow(() ->
-                       throw new BusinessException("Carrinho não encontrado");
+                .orElseThrow(() -> new BusinessException("Carrinho não encontrado"));
 
         List<CarrinhoProduto> itensCarrinho =
                 carrinhoProdutoRepository.findByCarrinhoId(
