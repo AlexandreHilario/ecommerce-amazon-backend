@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @ToString 
 @EqualsAndHashCode
 @Builder
-public class VendaResponseProdutoDTO {
+public class VendaProdutoResponseDTO {
 
     private Long produtoId;
     private String nomeProduto;   

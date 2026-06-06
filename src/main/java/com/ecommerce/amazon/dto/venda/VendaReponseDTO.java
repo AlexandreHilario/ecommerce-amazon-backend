@@ -3,8 +3,9 @@ package com.ecommerce.amazon.dto.venda;
 import lombok.Data;
 
 @Data  
-public class VendaRequestDTO {
+public class VendaResponseDTO {
 
+    private Long id;
     private Long usuarioId;
     private String nomeUsuario;   
     private BigDecimal valorTotal;
