@@ -48,4 +48,10 @@ public class VendaController {
                 vendaService.finalizarCompra(usuarioId)
         );
     }
+    @GetMapping("/listar")
+    public List<VendaResponseDTO> listarTodas() {
+        return vendaMapper.toResponseDTOList(
+                vendaService.listarTodas()
+        );
+    }
 }

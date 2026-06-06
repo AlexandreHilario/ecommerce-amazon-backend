@@ -48,6 +48,9 @@ public class VendaService {
 
         return vendaRepository.findByUsuarioId(usuarioId);
     }
+    public List<Venda> listarTodas() {
+        return vendaRepository.findAll();
+    }
 
     public Venda atualizarStatus(Long vendaId,
                                  StatusVenda novoStatus) {
