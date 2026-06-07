@@ -13,7 +13,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/carrinhos")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class CarrinhoController {
 
     private final CarrinhoService carrinhoService;
