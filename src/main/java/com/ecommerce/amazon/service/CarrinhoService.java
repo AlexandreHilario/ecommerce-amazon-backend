@@ -12,8 +12,10 @@ import com.ecommerce.amazon.repository.CarrinhoRepository;
 import com.ecommerce.amazon.repository.ProdutoRepository;
 import com.ecommerce.amazon.repository.UsuarioRepository;
 import com.ecommerce.amazon.mapper.CarrinhoMapper;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -26,7 +28,6 @@ public class CarrinhoService {
     private final ProdutoRepository produtoRepository;
     private final UsuarioRepository usuarioRepository;
     private final CarrinhoMapper carrinhoMapper;
-
 
     public Carrinho criarCarrinho(Long usuarioId) {
 
@@ -55,7 +56,7 @@ public class CarrinhoService {
                 );
 
         return carrinhoMapper.toDTO(carrinho, itens);
-    }
+        }
 
     public Carrinho adicionarProduto(
             Long carrinhoId,
