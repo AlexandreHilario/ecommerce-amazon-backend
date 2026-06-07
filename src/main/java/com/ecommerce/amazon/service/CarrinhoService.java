@@ -11,10 +11,10 @@ import com.ecommerce.amazon.repository.CarrinhoProdutoRepository;
 import com.ecommerce.amazon.repository.CarrinhoRepository;
 import com.ecommerce.amazon.repository.ProdutoRepository;
 import com.ecommerce.amazon.repository.UsuarioRepository;
+import com.ecommerce.amazon.mapper.CarrinhoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -25,6 +25,8 @@ public class CarrinhoService {
     private final CarrinhoProdutoRepository carrinhoProdutoRepository;
     private final ProdutoRepository produtoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final CarrinhoMapper carrinhoMapper;
+
 
     public Carrinho criarCarrinho(Long usuarioId) {
 
@@ -36,9 +38,7 @@ public class CarrinhoService {
                 .orElseThrow(() ->
                         new RuntimeException("Usuário não encontrado"));
 
-        Carrinho carrinho = Carrinho.builder()
-                .usuario(usuario)
-                .build();
+        Carrinho carrinho = carrinhoMapper.toEntity(usuario);
 
         return carrinhoRepository.save(carrinho);
     }
@@ -54,26 +54,7 @@ public class CarrinhoService {
                         carrinho.getId()
                 );
 
-        BigDecimal total = BigDecimal.ZERO;
-
-        for (CarrinhoProduto item : itens) {
-            total = total.add(
-                    item.getProduto()
-                            .getPreco()
-                            .multiply(
-                                    BigDecimal.valueOf(
-                                            item.getQuantidade()
-                                    )
-                            )
-            );
-        }
-
-        return CarrinhoDTO.builder()
-                .id(carrinho.getId())
-                .usuarioId(usuarioId)
-                .quantidadeItens(itens.size())
-                .total(total)
-                .build();
+        return carrinhoMapper.toDTO(carrinho, itens);
     }
 
     public Carrinho adicionarProduto(
