@@ -42,6 +42,9 @@ public class Usuario {
     @Column(name = "token_reset_senha", length = 255)
     private String tokenResetSenha;
 
+    @Column(name = "token_expiracao")
+    private LocalDateTime tokenExpiracao;
+
     @Column(name = "criado_em", insertable = false, updatable = false)
     private LocalDateTime criadoEm;
 }

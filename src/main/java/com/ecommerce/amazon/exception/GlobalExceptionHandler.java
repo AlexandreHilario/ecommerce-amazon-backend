@@ -8,14 +8,24 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@RestControllerAdvice 
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(Map.of(
+                        "erro", ex.getMessage(),
+                        "status", 404,
+                        "timestamp", LocalDateTime.now()
+                ));
+    }
+
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Map<String, Object>> handleBusiness(BusinessException ex) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST) 
+                .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of(
                         "erro", ex.getMessage(),
                         "status", 400,
@@ -23,11 +33,10 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    // Trata qualquer outro erro inesperado
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR) 
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of(
                         "erro", "Erro interno no servidor",
                         "status", 500,

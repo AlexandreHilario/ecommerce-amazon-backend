@@ -1,49 +1,42 @@
 package com.ecommerce.amazon.controller;
 
-
 import com.ecommerce.amazon.dto.usuario.UsuarioRequestDTO;
 import com.ecommerce.amazon.dto.usuario.UsuarioResponseDTO;
-import com.ecommerce.amazon.entity.Usuario;
 import com.ecommerce.amazon.service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/Usuario")
+@RequestMapping("/usuarios")
+@RequiredArgsConstructor
+@CrossOrigin("*")
 public class UsuarioController {
 
-    @Autowired
-    UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
-
-    @GetMapping("/usuario/{id}")
-    public Usuario getUser(@PathVariable Long id) {
-        return usuarioService.findById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioResponseDTO> getUsuario(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioService.findById(id));
     }
 
-    @PutMapping("/atualizarUsuario/{id}")
-    public Usuario updateUsuario(@RequestBody Usuario usuario, @PathVariable Long id) {
-        return usuarioService.updateUsuario(id, usuario);
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioResponseDTO> updateUsuario(
+            @PathVariable Long id,
+            @RequestBody UsuarioRequestDTO dto) {
+        return ResponseEntity.ok(usuarioService.updateUsuario(id, dto));
     }
 
-    @DeleteMapping("usuario/{id}")
-    public ResponseEntity.BodyBuilder deletarUsuario(@PathVariable Long id){
-        boolean deletado = usuarioService.deleteById(id);
-
-        if(deletado)
-            return ResponseEntity.status(HttpStatus.OK);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND);
-    }
-    @GetMapping("/listar")
-    public List<Usuario> listarUsuarios() {
-        return usuarioService.findAll();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) {
+        usuarioService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
-
+    @GetMapping
+    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
+        return ResponseEntity.ok(usuarioService.findAll());
+    }
 }
-

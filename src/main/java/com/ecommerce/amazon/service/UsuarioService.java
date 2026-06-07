@@ -3,40 +3,46 @@ package com.ecommerce.amazon.service;
 import com.ecommerce.amazon.dto.usuario.UsuarioRequestDTO;
 import com.ecommerce.amazon.dto.usuario.UsuarioResponseDTO;
 import com.ecommerce.amazon.entity.Usuario;
+import com.ecommerce.amazon.exception.ResourceNotFoundException;
+import com.ecommerce.amazon.mapper.UsuarioMapper;
 import com.ecommerce.amazon.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UsuarioService {
-    @Autowired
-    UsuarioRepository usuarioRepository;
 
-    public Usuario findById(Long id){
-        return usuarioRepository.findById(id).get();
+    private final UsuarioRepository usuarioRepository;
+    private final UsuarioMapper usuarioMapper;
+
+    public UsuarioResponseDTO findById(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + id));
+        return usuarioMapper.toDTO(usuario);
     }
 
-    public Usuario updateUsuario(Long id, Usuario novoUsuario){
-        Usuario usuario = usuarioRepository.findById(id).get();
-        usuario.setNome(novoUsuario.getNome());
-        usuario.setIdade(novoUsuario.getIdade());
-        usuario.setSenha(novoUsuario.getSenha());
-
-        return usuarioRepository.save(usuario);
+    public UsuarioResponseDTO updateUsuario(Long id, UsuarioRequestDTO dto) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + id));
+        usuario.setNome(dto.getNomeUsuario());
+        usuario.setIdade(dto.getIdadeUsuario());
+        return usuarioMapper.toDTO(usuarioRepository.save(usuario));
     }
 
-    public boolean deleteById(Long id){
-        if(usuarioRepository.existsById(id)){
-            usuarioRepository.deleteById(id);
-            return true;
-        }else{
-            return false;
+    public void deleteById(Long id) {
+        if (!usuarioRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Usuário não encontrado: " + id);
         }
+        usuarioRepository.deleteById(id);
     }
 
-    public List<Usuario> findAll() {
-        return usuarioRepository.findAll();
+    public List<UsuarioResponseDTO> findAll() {
+        return usuarioRepository.findAll()
+                .stream()
+                .map(usuarioMapper::toDTO)
+                .toList();
     }
 }

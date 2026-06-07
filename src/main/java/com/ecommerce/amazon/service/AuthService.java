@@ -1,5 +1,6 @@
 package com.ecommerce.amazon.service;
 
+import com.ecommerce.amazon.dto.auth.EsqueciSenhaDTO;
 import com.ecommerce.amazon.dto.auth.LoginRequestDTO;
 import com.ecommerce.amazon.dto.auth.RegisterRequestDTO;
 import com.ecommerce.amazon.dto.auth.ResetSenhaDTO;
@@ -10,27 +11,25 @@ import com.ecommerce.amazon.exception.BusinessException;
 import com.ecommerce.amazon.repository.UsuarioRepository;
 import com.ecommerce.amazon.security.JwtService;
 import com.ecommerce.amazon.security.UserDetailsImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-
-    public AuthService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
-                       JwtService jwtService, AuthenticationManager authenticationManager) {
-        this.usuarioRepository = usuarioRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-    }
+    private final EmailService emailService;
 
     public TokenResponseDTO login(LoginRequestDTO dto) {
         Authentication auth = authenticationManager.authenticate(
@@ -58,19 +57,29 @@ public class AuthService {
         return TokenResponseDTO.of(token, usuario.getEmail(), TipoUsuario.CLIENTE.name());
     }
 
-    public void redefinirSenha(ResetSenhaDTO dto) {
-        // 1. Buscar o usuário no banco pelo e-mail
+    public void esqueceuSenha(EsqueciSenhaDTO dto) {
         Usuario usuario = usuarioRepository.findByEmail(dto.email())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com este e-mail!"));
+                .orElseThrow(() -> new BusinessException("E-mail não cadastrado."));
 
-        // 2. Criptografar a nova senha para não salvar em texto puro
-        String senhaCriptografada = passwordEncoder.encode(dto.novaSenha());
-
-        // 3. Atualizar a senha do usuário
-        usuario.setSenha(senhaCriptografada);
-
-        // 4. Salvar as alterações no banco de dados
+        String token = UUID.randomUUID().toString();
+        usuario.setTokenResetSenha(token);
+        usuario.setTokenExpiracao(LocalDateTime.now().plusMinutes(30));
         usuarioRepository.save(usuario);
+
+        emailService.enviarEmailResetSenha(usuario.getEmail(), token);
     }
 
+    public void redefinirSenha(ResetSenhaDTO dto) {
+        Usuario usuario = usuarioRepository.findByTokenResetSenha(dto.token())
+                .orElseThrow(() -> new BusinessException("Token inválido."));
+
+        if (usuario.getTokenExpiracao() == null || usuario.getTokenExpiracao().isBefore(LocalDateTime.now())) {
+            throw new BusinessException("Token expirado. Solicite uma nova redefinição de senha.");
+        }
+
+        usuario.setSenha(passwordEncoder.encode(dto.novaSenha()));
+        usuario.setTokenResetSenha(null);
+        usuario.setTokenExpiracao(null);
+        usuarioRepository.save(usuario);
+    }
 }

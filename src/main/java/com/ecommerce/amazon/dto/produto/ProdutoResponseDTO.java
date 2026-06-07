@@ -15,4 +15,5 @@ public class ProdutoResponseDTO {
     private BigDecimal preco;
     private Integer estoque;
     private Boolean ativo;
+    private String imagemBase64;
 }

@@ -32,7 +32,6 @@ public class Produto {
     @Builder.Default
     private Integer estoque = 0;
 
-    @Lob
     @Column(columnDefinition = "bytea")
     private byte[] imagem;
 

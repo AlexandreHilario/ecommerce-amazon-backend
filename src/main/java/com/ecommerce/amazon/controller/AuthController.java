@@ -1,27 +1,24 @@
 package com.ecommerce.amazon.controller;
 
+import com.ecommerce.amazon.dto.auth.EsqueciSenhaDTO;
 import com.ecommerce.amazon.dto.auth.LoginRequestDTO;
 import com.ecommerce.amazon.dto.auth.RegisterRequestDTO;
 import com.ecommerce.amazon.dto.auth.ResetSenhaDTO;
 import com.ecommerce.amazon.dto.auth.TokenResponseDTO;
 import com.ecommerce.amazon.service.AuthService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
+@CrossOrigin("*")
 public class AuthController {
 
     private final AuthService authService;
-
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDTO> login(@RequestBody @Valid LoginRequestDTO dto) {
@@ -34,9 +31,14 @@ public class AuthController {
     }
 
     @PostMapping("/esqueci-senha")
+    public ResponseEntity<String> esqueceuSenha(@RequestBody @Valid EsqueciSenhaDTO dto) {
+        authService.esqueceuSenha(dto);
+        return ResponseEntity.ok("E-mail de redefinição enviado com sucesso.");
+    }
+
+    @PostMapping("/redefinir-senha")
     public ResponseEntity<String> redefinirSenha(@RequestBody @Valid ResetSenhaDTO dto) {
         authService.redefinirSenha(dto);
-        return ResponseEntity.ok("Senha redefinida com sucesso!");
+        return ResponseEntity.ok("Senha redefinida com sucesso.");
     }
-} 
-
+}

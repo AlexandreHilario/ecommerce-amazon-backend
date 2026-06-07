@@ -4,7 +4,9 @@ import com.ecommerce.amazon.dto.produto.ProdutoRequestDTO;
 import com.ecommerce.amazon.dto.produto.ProdutoResponseDTO;
 import com.ecommerce.amazon.service.ProdutoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,32 +24,29 @@ public class ProdutoController {
     }
 
     @GetMapping("/{id}")
-    public ProdutoResponseDTO buscarPorId(
-            @PathVariable Long id
-    ) {
+    public ProdutoResponseDTO buscarPorId(@PathVariable Long id) {
         return produtoService.buscarPorId(id);
     }
 
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public ProdutoResponseDTO criar(
-            @RequestBody ProdutoRequestDTO dto
-    ) {
-        return produtoService.criar(dto);
+            @RequestPart("dados") ProdutoRequestDTO dto,
+            @RequestPart(value = "imagem", required = false) MultipartFile imagem) {
+        return produtoService.criar(dto, imagem);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
     public ProdutoResponseDTO atualizar(
             @PathVariable Long id,
-            @RequestBody ProdutoRequestDTO dto
-    ) {
-        return produtoService.atualizar(id, dto);
+            @RequestPart("dados") ProdutoRequestDTO dto,
+            @RequestPart(value = "imagem", required = false) MultipartFile imagem) {
+        return produtoService.atualizar(id, dto, imagem);
     }
 
     @DeleteMapping("/{id}")
-    public void deletar(
-            @PathVariable Long id
-    ) {
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
         produtoService.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/ativos")
@@ -56,9 +55,7 @@ public class ProdutoController {
     }
 
     @GetMapping("/buscar")
-    public List<ProdutoResponseDTO> buscarPorNome(
-            @RequestParam String nome
-    ) {
+    public List<ProdutoResponseDTO> buscarPorNome(@RequestParam String nome) {
         return produtoService.buscarPorNome(nome);
     }
 }

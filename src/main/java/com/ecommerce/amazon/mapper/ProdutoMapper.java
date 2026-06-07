@@ -29,11 +29,4 @@ public class ProdutoMapper {
                 .build();
     }
 
-    public void updateEntityFromDTO(Produto produto, ProdutoRequestDTO dto) {
-        produto.setNome(dto.getNome());
-        produto.setDescricao(dto.getDescricao());
-        produto.setPreco(dto.getPreco());
-        produto.setEstoque(dto.getEstoque());
-        produto.setAtivo(dto.getAtivo());
-    }
 }

@@ -18,6 +18,7 @@ import com.ecommerce.amazon.repository.VendaRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -78,6 +79,7 @@ public class VendaService {
         produtoRepository.save(produto);
     }
 
+    @Transactional
     public Venda finalizarCompra(Long usuarioId) {
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
