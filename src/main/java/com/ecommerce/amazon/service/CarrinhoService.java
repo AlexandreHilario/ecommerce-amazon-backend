@@ -24,11 +24,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CarrinhoService {
 
-    private final CarrinhoRepository carrinhoRepository;
-    private final CarrinhoProdutoRepository carrinhoProdutoRepository;
-    private final ProdutoRepository produtoRepository;
-    private final UsuarioRepository usuarioRepository;
-    private final CarrinhoMapper carrinhoMapper;
+        private final CarrinhoRepository carrinhoRepository;
+        private final CarrinhoProdutoRepository carrinhoProdutoRepository;
+        private final ProdutoRepository produtoRepository;
+        private final UsuarioRepository usuarioRepository;
+        private final CarrinhoMapper carrinhoMapper;
 
     public CarrinhoDTO criarCarrinho(Long usuarioId) {
         if (carrinhoRepository.existsByUsuarioId(usuarioId)) {
