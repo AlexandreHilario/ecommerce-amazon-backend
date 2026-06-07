@@ -16,130 +16,119 @@ import com.ecommerce.amazon.mapper.CarrinhoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CarrinhoService {
 
-    private final CarrinhoRepository carrinhoRepository;
-    private final CarrinhoProdutoRepository carrinhoProdutoRepository;
-    private final ProdutoRepository produtoRepository;
-    private final UsuarioRepository usuarioRepository;
-    private final CarrinhoMapper carrinhoMapper;
+        private final CarrinhoRepository carrinhoRepository;
+        private final CarrinhoProdutoRepository carrinhoProdutoRepository;
+        private final ProdutoRepository produtoRepository;
+        private final UsuarioRepository usuarioRepository;
+        private final CarrinhoMapper carrinhoMapper;
 
-    public Carrinho criarCarrinho(Long usuarioId) {
+        public Carrinho criarCarrinho(Long usuarioId) {
 
-        if (carrinhoRepository.existsByUsuarioId(usuarioId)) {
-            throw new RuntimeException("Usuário já possui carrinho");
+                if (carrinhoRepository.existsByUsuarioId(usuarioId)) {
+                        throw new RuntimeException("Usuário já possui carrinho");
+                }
+
+                Usuario usuario = usuarioRepository.findById(usuarioId)
+                                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+                Carrinho carrinho = carrinhoMapper.toEntity(usuario);
+
+                return carrinhoRepository.save(carrinho);
         }
 
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() ->
-                        new RuntimeException("Usuário não encontrado"));
+        public CarrinhoDTO buscarPorUsuario(Long usuarioId) {
 
-        Carrinho carrinho = carrinhoMapper.toEntity(usuario);
+                Carrinho carrinho = carrinhoRepository.findByUsuarioId(usuarioId)
+                                .orElseThrow(() -> new RuntimeException("Carrinho não encontrado"));
 
-        return carrinhoRepository.save(carrinho);
-    }
+                List<CarrinhoProduto> itens = carrinhoProdutoRepository.findByCarrinhoId(
+                                carrinho.getId());
 
-    public CarrinhoDTO buscarPorUsuario(Long usuarioId) {
-
-        Carrinho carrinho = carrinhoRepository.findByUsuarioId(usuarioId)
-                .orElseThrow(() ->
-                        new RuntimeException("Carrinho não encontrado"));
-
-        List<CarrinhoProduto> itens =
-                carrinhoProdutoRepository.findByCarrinhoId(
-                        carrinho.getId()
-                );
-
-        return carrinhoMapper.toDTO(carrinho, itens);
+                return carrinhoMapper.toDTO(carrinho, itens);
         }
 
-    public Carrinho adicionarProduto(
-            Long carrinhoId,
-            AdicionarProdutoDTO dto
-    ) {
+        public Carrinho adicionarProduto(
+                        Long carrinhoId,
+                        AdicionarProdutoDTO dto) {
 
-        Carrinho carrinho = carrinhoRepository.findById(carrinhoId)
-                .orElseThrow(() ->
-                        new RuntimeException("Carrinho não encontrado"));
+                if (dto.getQuantidade() == null || dto.getQuantidade() <= 0) {
+                        throw new RuntimeException("A quantidade deve ser maior que zero");
+                }
 
-        Produto produto = produtoRepository.findById(dto.getProdutoId())
-                .orElseThrow(() ->
-                        new RuntimeException("Produto não encontrado"));
+                Carrinho carrinho = carrinhoRepository.findById(carrinhoId)
+                                .orElseThrow(() -> new RuntimeException("Carrinho não encontrado"));
 
-        CarrinhoProduto itemExistente =
-                carrinhoProdutoRepository
-                        .findByCarrinhoIdAndProdutoId(
-                                carrinhoId,
-                                dto.getProdutoId()
-                        )
-                        .orElse(null);
+                Produto produto = produtoRepository.findById(dto.getProdutoId())
+                                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
-        if (itemExistente != null) {
+                CarrinhoProduto itemExistente = carrinhoProdutoRepository
+                                .findByCarrinhoIdAndProdutoId(
+                                                carrinhoId,
+                                                dto.getProdutoId())
+                                .orElse(null);
 
-            itemExistente.setQuantidade(
-                    itemExistente.getQuantidade() + dto.getQuantidade()
-            );
+                if (itemExistente != null) {
 
-            carrinhoProdutoRepository.save(itemExistente);
+                        itemExistente.setQuantidade(
+                                        itemExistente.getQuantidade() + dto.getQuantidade());
 
-            return carrinho;
+                        carrinhoProdutoRepository.save(itemExistente);
+
+                        return carrinho;
+                }
+
+                CarrinhoProduto item = CarrinhoProduto.builder()
+                                .carrinho(carrinho)
+                                .produto(produto)
+                                .quantidade(dto.getQuantidade())
+                                .build();
+
+                carrinhoProdutoRepository.save(item);
+
+                return carrinho;
         }
 
-        CarrinhoProduto item = CarrinhoProduto.builder()
-                .carrinho(carrinho)
-                .produto(produto)
-                .quantidade(dto.getQuantidade())
-                .build();
+        public void removerProduto(
+                        Long carrinhoId,
+                        Long produtoId) {
 
-        carrinhoProdutoRepository.save(item);
+                CarrinhoProduto item = carrinhoProdutoRepository
+                                .findByCarrinhoIdAndProdutoId(
+                                                carrinhoId,
+                                                produtoId)
+                                .orElseThrow(() -> new RuntimeException("Produto não encontrado no carrinho"));
 
-        return carrinho;
-    }
+                carrinhoProdutoRepository.delete(item);
+        }
 
-    public void removerProduto(
-            Long carrinhoId,
-            Long produtoId
-    ) {
+        public void atualizarQuantidade(
+                        Long carrinhoId,
+                        Long produtoId,
+                        AtualizarQuantidadeDTO dto) {
 
-        CarrinhoProduto item =
-                carrinhoProdutoRepository
-                        .findByCarrinhoIdAndProdutoId(
-                                carrinhoId,
-                                produtoId
-                        )
-                        .orElseThrow(() ->
-                                new RuntimeException("Produto não encontrado no carrinho"));
+                if (dto.getQuantidade() == null || dto.getQuantidade() <= 0) {
+                        throw new RuntimeException("A quantidade deve ser maior que zero");
+                }
 
-        carrinhoProdutoRepository.delete(item);
-    }
+                CarrinhoProduto item = carrinhoProdutoRepository
+                                .findByCarrinhoIdAndProdutoId(
+                                                carrinhoId,
+                                                produtoId)
+                                .orElseThrow(() -> new RuntimeException("Produto não encontrado no carrinho"));
 
-    public void atualizarQuantidade(
-            Long carrinhoId,
-            Long produtoId,
-            AtualizarQuantidadeDTO dto
-    ) {
+                item.setQuantidade(dto.getQuantidade());
 
-        CarrinhoProduto item =
-                carrinhoProdutoRepository
-                        .findByCarrinhoIdAndProdutoId(
-                                carrinhoId,
-                                produtoId
-                        )
-                        .orElseThrow(() ->
-                                new RuntimeException("Produto não encontrado no carrinho"));
+                carrinhoProdutoRepository.save(item);
+        }
 
-        item.setQuantidade(dto.getQuantidade());
+        public void limparCarrinho(Long carrinhoId) {
 
-        carrinhoProdutoRepository.save(item);
-    }
-
-    public void limparCarrinho(Long carrinhoId) {
-
-        carrinhoProdutoRepository.deleteByCarrinhoId(carrinhoId);
-    }
+                carrinhoProdutoRepository.deleteByCarrinhoId(carrinhoId);
+        }
 }
